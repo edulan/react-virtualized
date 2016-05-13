@@ -19,36 +19,35 @@ export default class VirtualScrollExample extends Component {
     super(props)
 
     this.state = {
-      overscanRowsCount: 5,
-      rowsCount: props.list.size,
+      overscanRowCount: 0,
+      rowCount: props.list.size,
       scrollToIndex: undefined,
+      showScrollingPlaceholder: false,
       useDynamicRowHeight: false,
       virtualScrollHeight: 300,
-      virtualScrollRowHeight: 60
+      virtualScrollRowHeight: 50
     }
 
     this._getRowHeight = this._getRowHeight.bind(this)
     this._noRowsRenderer = this._noRowsRenderer.bind(this)
-    this._onRowsCountChange = this._onRowsCountChange.bind(this)
+    this._onRowCountChange = this._onRowCountChange.bind(this)
     this._onScrollToRowChange = this._onScrollToRowChange.bind(this)
     this._rowRenderer = this._rowRenderer.bind(this)
-    this._updateUseDynamicRowHeight = this._updateUseDynamicRowHeight.bind(this)
   }
 
   render () {
-    const { list, ...props } = this.props
-
     const {
-      overscanRowsCount,
-      rowsCount,
+      overscanRowCount,
+      rowCount,
       scrollToIndex,
+      showScrollingPlaceholder,
       useDynamicRowHeight,
       virtualScrollHeight,
       virtualScrollRowHeight
     } = this.state
 
     return (
-      <ContentBox {...props}>
+      <ContentBox {...this.props}>
         <ContentBoxHeader
           text='VirtualScroll'
           sourceLink='https://github.com/bvaughn/react-virtualized/blob/master/source/VirtualScroll/VirtualScroll.example.js'
@@ -64,28 +63,39 @@ export default class VirtualScrollExample extends Component {
           <label className={styles.checkboxLabel}>
             <input
               aria-label='Use dynamic row heights?'
+              checked={useDynamicRowHeight}
               className={styles.checkbox}
               type='checkbox'
-              value={useDynamicRowHeight}
-              onChange={event => this._updateUseDynamicRowHeight(event.target.checked)}
+              onChange={event => this.setState({ useDynamicRowHeight: event.target.checked })}
             />
             Use dynamic row heights?
+          </label>
+
+          <label className={styles.checkboxLabel}>
+            <input
+              aria-label='Show scrolling placeholder?'
+              checked={showScrollingPlaceholder}
+              className={styles.checkbox}
+              type='checkbox'
+              onChange={event => this.setState({ showScrollingPlaceholder: event.target.checked })}
+            />
+            Show scrolling placeholder?
           </label>
         </ContentBoxParagraph>
 
         <InputRow>
           <LabeledInput
             label='Num rows'
-            name='rowsCount'
-            onChange={this._onRowsCountChange}
-            value={rowsCount}
+            name='rowCount'
+            onChange={this._onRowCountChange}
+            value={rowCount}
           />
           <LabeledInput
             label='Scroll to'
             name='onScrollToRow'
             placeholder='Index...'
             onChange={this._onScrollToRowChange}
-            value={scrollToIndex}
+            value={scrollToIndex || ''}
           />
           <LabeledInput
             label='List height'
@@ -102,9 +112,9 @@ export default class VirtualScrollExample extends Component {
           />
           <LabeledInput
             label='Overscan'
-            name='overscanRowsCount'
-            onChange={event => this.setState({ overscanRowsCount: parseInt(event.target.value, 10) || 0 })}
-            value={overscanRowsCount}
+            name='overscanRowCount'
+            onChange={event => this.setState({ overscanRowCount: parseInt(event.target.value, 10) || 0 })}
+            value={overscanRowCount}
           />
         </InputRow>
 
@@ -115,9 +125,9 @@ export default class VirtualScrollExample extends Component {
                 ref='VirtualScroll'
                 className={styles.VirtualScroll}
                 height={virtualScrollHeight}
-                overscanRowsCount={overscanRowsCount}
+                overscanRowCount={overscanRowCount}
                 noRowsRenderer={this._noRowsRenderer}
-                rowsCount={rowsCount}
+                rowCount={rowCount}
                 rowHeight={useDynamicRowHeight ? this._getRowHeight : virtualScrollRowHeight}
                 rowRenderer={this._rowRenderer}
                 scrollToIndex={scrollToIndex}
@@ -140,7 +150,7 @@ export default class VirtualScrollExample extends Component {
     return list.get(index % list.size)
   }
 
-  _getRowHeight (index) {
+  _getRowHeight ({ index }) {
     return this._getDatum(index).size
   }
 
@@ -152,15 +162,15 @@ export default class VirtualScrollExample extends Component {
     )
   }
 
-  _onRowsCountChange (event) {
-    const rowsCount = parseInt(event.target.value, 10) || 0
+  _onRowCountChange (event) {
+    const rowCount = parseInt(event.target.value, 10) || 0
 
-    this.setState({ rowsCount })
+    this.setState({ rowCount })
   }
 
   _onScrollToRowChange (event) {
-    const { rowsCount } = this.state
-    let scrollToIndex = Math.min(rowsCount - 1, parseInt(event.target.value, 10))
+    const { rowCount } = this.state
+    let scrollToIndex = Math.min(rowCount - 1, parseInt(event.target.value, 10))
 
     if (isNaN(scrollToIndex)) {
       scrollToIndex = undefined
@@ -169,8 +179,24 @@ export default class VirtualScrollExample extends Component {
     this.setState({ scrollToIndex })
   }
 
-  _rowRenderer (index) {
-    const { useDynamicRowHeight } = this.state
+  _rowRenderer ({ index, isScrolling }) {
+    const {
+      showScrollingPlaceholder,
+      useDynamicRowHeight
+    } = this.state
+
+    if (
+      showScrollingPlaceholder &&
+      isScrolling
+    ) {
+      return (
+        <div className={styles.row}>
+          <span className={styles.isScrollingPlaceholder}>
+            Scrolling...
+          </span>
+        </div>
+      )
+    }
 
     const datum = this._getDatum(index)
 
@@ -182,16 +208,13 @@ export default class VirtualScrollExample extends Component {
           additionalContent = <div>It is medium-sized.</div>
           break
         case 100:
-          additionalContent = <div>It is large-sized.<br/>It has a 3rd row.</div>
+          additionalContent = <div>It is large-sized.<br />It has a 3rd row.</div>
           break
       }
     }
 
     return (
-      <div
-        className={styles.row}
-        style={{ height: '100%' }}
-      >
+      <div className={styles.row}>
         <div
           className={styles.letter}
           style={{
@@ -216,11 +239,5 @@ export default class VirtualScrollExample extends Component {
         }
       </div>
     )
-  }
-
-  _updateUseDynamicRowHeight (value) {
-    this.setState({
-      useDynamicRowHeight: value
-    })
   }
 }

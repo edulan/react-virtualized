@@ -1,6 +1,28 @@
 Changelog
 ------------
 
+##### 7.0.3
+Added `box-sizing: border-box` rules to `.FlexTable__headerRow` and `.FlexTable__Grid` classes to fix edge-case scrollbar bug experienced by some users.
+
+##### 7.0.2
+Added `recomputeCellSizesAndPositions` method to `Collection` (to pass through to inner `CollectionView`).
+
+##### 7.0.1
+Replaced single occurence of `Number.isNaN` with `isNaN` to avoid IE compatibility issues.
+
+# 7.0.0
+Version 7 changes are described in detail on the [Version 7 Roadmap wiki page](https://github.com/bvaughn/react-virtualized/wiki/Version-7-Roadmap).
+Upgrade instructions and [jscodeshift](https://github.com/facebook/jscodeshift) mods can also be found there.
+
+To run a code mod, check out react-virtualized (or download the codemod) and then...
+```
+jscodeshift -t /path/to/react-virtualized/codemods/6-to-7/rename-properties.js source
+```
+
+##### 6.3.2
+Fixed edge-case bug in `Collection` where initial `scrollLeft` and `scrollTop` would not correctly adjust inner offsets.
+Thanks @edulan for the contribution!
+
 ##### 6.3.1
 Added better checks against invalid style properties in `AutoSizer` to protected against the case when it is removed from the DOM immediately after being added.
 

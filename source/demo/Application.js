@@ -1,5 +1,6 @@
 import ArrowKeyStepperExample from '../ArrowKeyStepper/ArrowKeyStepper.example'
 import AutoSizerExample from '../AutoSizer/AutoSizer.example'
+import CellMeasurerExample from '../CellMeasurer/CellMeasurer.example'
 import CollectionExample from '../Collection/Collection.example'
 import ColumnSizerExample from '../ColumnSizer/ColumnSizer.example'
 import ComponentLink from './ComponentLink'
@@ -18,7 +19,7 @@ import shallowCompare from 'react-addons-shallow-compare'
 import '../../styles.css'
 
 const COMPONENTS = ['Collection', 'Grid', 'FlexTable', 'VirtualScroll']
-const HIGH_ORDER_COMPONENTS = ['ArrowKeyStepper', 'AutoSizer', 'ColumnSizer', 'InfiniteLoader', 'ScrollSync']
+const HIGH_ORDER_COMPONENTS = ['ArrowKeyStepper', 'AutoSizer', 'CellMeasurer', 'ColumnSizer', 'InfiniteLoader', 'ScrollSync']
 
 // HACK Generate arbitrary data for use in example components :)
 const list = Immutable.List(generateRandomList())
@@ -114,6 +115,12 @@ class Application extends Component {
               list={list}
             />
           }
+          {activeComponent === 'CellMeasurer' &&
+            <CellMeasurerExample
+              className={styles.column}
+              list={list}
+            />
+          }
           {activeComponent === 'Collection' &&
             <CollectionExample
               className={styles.column}
@@ -171,7 +178,7 @@ class Application extends Component {
 }
 
 render(
-  <Application/>,
+  <Application />,
   document.getElementById('root')
 )
 

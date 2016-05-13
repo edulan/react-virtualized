@@ -1,6 +1,5 @@
 /** @flow */
-import Immutable from 'immutable'
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { ContentBox, ContentBoxHeader, ContentBoxParagraph } from '../demo/ContentBox'
 import ArrowKeyStepper from './ArrowKeyStepper'
 import AutoSizer from '../AutoSizer'
@@ -10,23 +9,17 @@ import cn from 'classnames'
 import styles from './ArrowKeyStepper.example.css'
 
 export default class ArrowKeyStepperExample extends Component {
-  static propTypes = {
-    list: PropTypes.instanceOf(Immutable.List).isRequired
-  }
-
   constructor (props) {
     super(props)
 
     this._getColumnWidth = this._getColumnWidth.bind(this)
     this._getRowHeight = this._getRowHeight.bind(this)
-    this._renderCell = this._renderCell.bind(this)
+    this._cellRenderer = this._cellRenderer.bind(this)
   }
 
   render () {
-    const { list, ...props } = this.props
-
     return (
-      <ContentBox {...props}>
+      <ContentBox {...this.props}>
         <ContentBoxHeader
           text='ArrowKeyStepper'
           sourceLink='https://github.com/bvaughn/react-virtualized/blob/master/source/ArrowKeyStepper/ArrowKeyStepper.example.js'
@@ -43,8 +36,8 @@ export default class ArrowKeyStepperExample extends Component {
         </ContentBoxParagraph>
 
         <ArrowKeyStepper
-          columnsCount={100}
-          rowsCount={100}
+          columnCount={100}
+          rowCount={100}
         >
           {({ onSectionRendered, scrollToColumn, scrollToRow }) => (
             <div>
@@ -57,12 +50,12 @@ export default class ArrowKeyStepperExample extends Component {
                   <Grid
                     className={styles.Grid}
                     columnWidth={this._getColumnWidth}
-                    columnsCount={100}
+                    columnCount={100}
                     height={200}
                     onSectionRendered={onSectionRendered}
-                    renderCell={({ columnIndex, rowIndex }) => this._renderCell({ columnIndex, rowIndex, scrollToColumn, scrollToRow }) }
+                    cellRenderer={({ columnIndex, rowIndex }) => this._cellRenderer({ columnIndex, rowIndex, scrollToColumn, scrollToRow })}
                     rowHeight={this._getRowHeight}
-                    rowsCount={100}
+                    rowCount={100}
                     scrollToColumn={scrollToColumn}
                     scrollToRow={scrollToRow}
                     width={width}
@@ -80,15 +73,15 @@ export default class ArrowKeyStepperExample extends Component {
     return shallowCompare(this, nextProps, nextState)
   }
 
-  _getColumnWidth (index) {
+  _getColumnWidth ({ index }) {
     return (1 + (index % 3)) * 60
   }
 
-  _getRowHeight (index) {
+  _getRowHeight ({ index }) {
     return (1 + (index % 3)) * 30
   }
 
-  _renderCell ({ columnIndex, rowIndex, scrollToColumn, scrollToRow }) {
+  _cellRenderer ({ columnIndex, rowIndex, scrollToColumn, scrollToRow }) {
     const className = cn(styles.Cell, {
       [styles.FocusedCell]: columnIndex === scrollToColumn && rowIndex === scrollToRow
     })
