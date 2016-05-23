@@ -7,7 +7,7 @@ Only a small number of cells are rendered based on the horizontal and vertical s
 ### Prop Types
 | Property | Type | Required? | Description |
 |:---|:---|:---:|:---|
-| cellRangeRenderer | Function |  | Responsible for rendering a group of cells given their index ranges.: `({ cellCache: Map, cellRenderer: Function, columnSizeAndPositionManager: CellSizeAndPositionManager, columnStartIndex: number, columnStopIndex: number, isScrolling: boolean, rowSizeAndPositionManager: CellSizeAndPositionManager, rowStartIndex: number, rowStopIndex: number }): Array<PropTypes.node>`. [Learn more](#cellRangeRenderer) |
+| cellRangeRenderer | Function |  | Responsible for rendering a group of cells given their index ranges.: `({ cellCache: Map, cellRenderer: Function, columnSizeAndPositionManager: CellSizeAndPositionManager, columnStartIndex: number, columnStopIndex: number, isScrolling: boolean, rowSizeAndPositionManager: CellSizeAndPositionManager, rowStartIndex: number, rowStopIndex: number, scrollLeft: number, scrollTop: number }): Array<PropTypes.node>`. [Learn more](#cellRangeRenderer) |
 | cellRenderer | Function | ✓ | Responsible for rendering a cell given an row and column index: `({ columnIndex: number, isScrolling: boolean, rowIndex: number }): PropTypes.node` |
 | className | String |  | Optional custom CSS class name to attach to root `Grid` element. |
 | columnCount | Number | ✓ | Number of columns in grid. |
@@ -21,6 +21,7 @@ Only a small number of cells are rendered based on the horizontal and vertical s
 | rowCount | Number | ✓ | Number of rows in grid. |
 | rowHeight | Number or Function | ✓ | Either a fixed row height (number) or a function that returns the height of a row given its index: `({ index: number }): number` |
 | scrollLeft | Number |  | Horizontal offset |
+| scrollToAlignment | String |  | Controls the alignment of scrolled-to-cells. The default ("_auto_") scrolls the least amount possible to ensure that the specified cell is fully visible. Use "_start_" to always align cells to the top/left of the `Grid` and "_end_" to align them bottom/right. |
 | scrollToColumn | Number |  | Column index to ensure visible (by forcefully scrolling if necessary) |
 | scrollToRow | Number |  | Row index to ensure visible (by forcefully scrolling if necessary) |
 | scrollTop | Number |  | Vertical offset |
@@ -65,7 +66,9 @@ function cellRangeRenderer ({
   isScrolling,
   rowSizeAndPositionManager,
   rowStartIndex,
-  rowStopIndex
+  rowStopIndex,
+  scrollLeft: number,
+  scrollTop: number
 }) {
   const renderedCells = []
 

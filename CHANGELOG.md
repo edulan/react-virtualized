@@ -1,6 +1,20 @@
 Changelog
 ------------
 
+##### 7.1.1
+Resolved edge-case bug that caused the bottom/right cells in a `Grid` or `Collection` to be partially overlapped by a scrollbar.
+Thanks to @anjianshi for reporting this and collaborating on the fix!
+
+##### 7.1.0
+Added `scrollToAlignment` property to `Collection`, `Grid`, `FlexTable`, and `VirtualScroll` to offer finer-grained control of how scrolled-to cells are aligned.
+Default behavior ("_auto_") remains unchanged- the least amount of scrolling will occur to ensure that the specified cell is visible.
+
+##### 7.0.5
+Fixed edge-case bug where `InfiniteLoader` did not respect `minBatchSize` setting when a user was scrolling up.
+
+##### 7.0.4
+Added `scrollLeft` and `scrollTop` parameters to `cellRangeRenderer` callback for `Grid`.
+
 ##### 7.0.3
 Added `box-sizing: border-box` rules to `.FlexTable__headerRow` and `.FlexTable__Grid` classes to fix edge-case scrollbar bug experienced by some users.
 

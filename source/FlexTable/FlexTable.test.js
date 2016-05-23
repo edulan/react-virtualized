@@ -53,6 +53,7 @@ describe('FlexTable', () => {
     rowGetter = immutableRowGetter,
     rowHeight = 10,
     rowStyle,
+    scrollToAlignment,
     scrollToIndex,
     scrollTop,
     sort,
@@ -79,6 +80,7 @@ describe('FlexTable', () => {
         rowGetter={rowGetter}
         rowHeight={rowHeight}
         rowStyle={rowStyle}
+        scrollToAlignment={scrollToAlignment}
         scrollToIndex={scrollToIndex}
         scrollTop={scrollTop}
         sort={sort}
@@ -133,7 +135,7 @@ describe('FlexTable', () => {
       expect(result instanceof Error).toEqual(true)
     })
 
-    it('should accept falsy children to allow easier dyanmic showing/hiding of columns', () => {
+    it('should accept falsy children to allow easier dynamic showing/hiding of columns', () => {
       const children = [
         false,
         <FlexColumn
