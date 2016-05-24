@@ -141,7 +141,7 @@ export default class Grid extends Component {
      * The default ("auto") scrolls the least amount possible to ensure that the specified cell is fully visible.
      * Use "start" to align cells to the top/left of the Grid and "end" to align bottom/right.
      */
-    scrollToAlignment: PropTypes.oneOf(['auto', 'end', 'start']).isRequired,
+    scrollToAlignment: PropTypes.oneOf(['auto', 'end', 'start', 'center']).isRequired,
 
     /**
      * Column index to ensure visible (by forcefully scrolling if necessary)
@@ -506,6 +506,12 @@ export default class Grid extends Component {
       gridStyle.overflowY = 'hidden'
     }
 
+    const showNoContentRenderer = (
+      childrenToDisplay.length === 0 &&
+      height > 0 &&
+      width > 0
+    )
+
     return (
       <div
         ref='scrollingContainer'
@@ -530,7 +536,7 @@ export default class Grid extends Component {
             {childrenToDisplay}
           </div>
         }
-        {childrenToDisplay.length === 0 &&
+        {showNoContentRenderer &&
           noContentRenderer()
         }
       </div>

@@ -299,6 +299,25 @@ describe('Grid', () => {
       expect(grid.state.scrollLeft).toEqual(1050)
       expect(grid.state.scrollTop).toEqual(900)
     })
+
+    it('should scroll to the correct position for :scrollToAlignment "center"', () => {
+      render(getMarkup({
+        scrollToColumn: 99,
+        scrollToRow: 99
+      }))
+      const grid = render(getMarkup({
+        scrollToAlignment: 'center',
+        scrollToColumn: 24,
+        scrollToRow: 49
+      }))
+      // 100 columns * 50 item width = 5,000 total item width
+      // 100 rows * 20 item height = 2,000 total item height
+      // We first scroll past the specified cell and then back.
+      // The minimum amount of scrolling then should leave the specified cell in the middle (just scrolled into view).
+      // Since alignment is set to "center" we should scroll past this point until the cell is aligned center.
+      expect(grid.state.scrollLeft).toEqual(1075)
+      expect(grid.state.scrollTop).toEqual(920)
+    })
   })
 
   describe('property updates', () => {
@@ -390,6 +409,19 @@ describe('Grid', () => {
     it('should render an empty body if :rowCount is 0 and there is no :noContentRenderer', () => {
       let list = findDOMNode(render(getMarkup({
         rowCount: 0
+      })))
+      expect(list.textContent).toEqual('')
+    })
+
+    it('should render an empty body there is a :noContentRenderer but :height or :width are 0', () => {
+      let list = findDOMNode(render(getMarkup({
+        height: 0,
+        noContentRenderer: () => <div>No data</div>
+      })))
+      expect(list.textContent).toEqual('')
+      list = findDOMNode(render(getMarkup({
+        noContentRenderer: () => <div>No data</div>,
+        width: 0
       })))
       expect(list.textContent).toEqual('')
     })
