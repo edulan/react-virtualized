@@ -35,6 +35,7 @@ describe('FlexTable', () => {
     className,
     columnData = { data: 123 },
     disableSort = false,
+    estimatedRowSize,
     headerClassName,
     headerHeight = 20,
     headerRenderer,
@@ -45,6 +46,8 @@ describe('FlexTable', () => {
     noRowsRenderer,
     onHeaderClick,
     onRowClick,
+    onRowMouseOver,
+    onRowMouseOut,
     onRowsRendered,
     onScroll,
     overscanRowCount = 0,
@@ -65,6 +68,7 @@ describe('FlexTable', () => {
     return (
       <FlexTable
         className={className}
+        estimatedRowSize={estimatedRowSize}
         headerClassName={headerClassName}
         headerHeight={headerHeight}
         headerStyle={headerStyle}
@@ -72,6 +76,8 @@ describe('FlexTable', () => {
         noRowsRenderer={noRowsRenderer}
         onHeaderClick={onHeaderClick}
         onRowClick={onRowClick}
+        onRowMouseOver={onRowMouseOver}
+        onRowMouseOut={onRowMouseOut}
         onRowsRendered={onRowsRendered}
         onScroll={onScroll}
         overscanRowCount={overscanRowCount}
@@ -213,6 +219,21 @@ describe('FlexTable', () => {
       const emailColumn = columns[1]
       expect(Number.parseInt(emailColumn.style.maxWidth, 10)).toEqual(75)
       expect(Number.parseInt(emailColumn.style.minWidth, 10)).toEqual(25)
+    })
+  })
+
+  describe('measureAllRows', () => {
+    it('should measure any unmeasured rows', () => {
+      const rendered = render(getMarkup({
+        estimatedRowSize: 15,
+        height: 0,
+        rowCount: 10,
+        rowHeight: () => 20,
+        width: 0
+      }))
+      expect(rendered.refs.Grid._rowSizeAndPositionManager.getTotalSize()).toEqual(150)
+      rendered.measureAllRows()
+      expect(rendered.refs.Grid._rowSizeAndPositionManager.getTotalSize()).toEqual(200)
     })
   })
 
@@ -500,6 +521,29 @@ describe('FlexTable', () => {
       Simulate.click(rows[0])
       Simulate.click(rows[3])
       expect(onRowClickCalls).toEqual([0, 3])
+    })
+  })
+
+  describe('onRowMouseOver/Out', () => {
+    it('should call :onRowMouseOver and :onRowMouseOut with the correct :rowIndex when the mouse is moved over rows', () => {
+      let onRowMouseOverCalls = []
+      let onRowMouseOutCalls = []
+      const rendered = findDOMNode(render(getMarkup({
+        onRowMouseOver: ({ index }) => onRowMouseOverCalls.push(index),
+        onRowMouseOut: ({ index }) => onRowMouseOutCalls.push(index)
+      })))
+
+      const simulateMouseOver = (from, to) => {
+        Simulate.mouseOut(from, { relatedTarget: to })
+        Simulate.mouseOver(to, { relatedTarget: from })
+      }
+
+      const rows = rendered.querySelectorAll('.FlexTable__row')
+      simulateMouseOver(rows[0], rows[1])
+      simulateMouseOver(rows[1], rows[2])
+      simulateMouseOver(rows[2], rows[3])
+      expect(onRowMouseOverCalls).toEqual([1, 2, 3])
+      expect(onRowMouseOutCalls).toEqual([0, 1, 2])
     })
   })
 

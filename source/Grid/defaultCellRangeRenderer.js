@@ -1,6 +1,5 @@
 /** @flow */
 import React from 'react'
-import CellSizeAndPositionManager from './utils/CellSizeAndPositionManager'
 
 /**
  * Default implementation of cellRangeRenderer used by Grid.
@@ -12,12 +11,14 @@ export default function defaultCellRangeRenderer ({
   columnSizeAndPositionManager,
   columnStartIndex,
   columnStopIndex,
+  horizontalOffsetAdjustment,
   isScrolling,
   rowSizeAndPositionManager,
   rowStartIndex,
   rowStopIndex,
   scrollLeft,
-  scrollTop
+  scrollTop,
+  verticalOffsetAdjustment
 }: DefaultCellRangeRendererParams) {
   const renderedCells = []
 
@@ -62,8 +63,8 @@ export default function defaultCellRangeRenderer ({
           className='Grid__cell'
           style={{
             height: rowDatum.size,
-            left: columnDatum.offset,
-            top: rowDatum.offset,
+            left: columnDatum.offset + horizontalOffsetAdjustment,
+            top: rowDatum.offset + verticalOffsetAdjustment,
             width: columnDatum.size
           }}
         >
@@ -81,11 +82,11 @@ export default function defaultCellRangeRenderer ({
 type DefaultCellRangeRendererParams = {
   cellCache: Object,
   cellRenderer: Function,
-  columnSizeAndPositionManager: CellSizeAndPositionManager,
+  columnSizeAndPositionManager: Object,
   columnStartIndex: number,
   columnStopIndex: number,
   isScrolling: boolean,
-  rowSizeAndPositionManager: CellSizeAndPositionManager,
+  rowSizeAndPositionManager: Object,
   rowStartIndex: number,
   rowStopIndex: number,
   scrollLeft: number,

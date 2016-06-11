@@ -1,6 +1,37 @@
 Changelog
 ------------
 
+##### 7.4.0
+Added mouse-over and mouse-out row-level events to `FlexTable`. Thanks to @queeto for the PR!
+
+##### 7.3.3
+Fixed unintention regression in IE10 support introduced with `ScalingCellSizeAndPositionManager` extending `CellSizeAndPositionManager`.
+Inheritance has been replaced with composition for this case in order to simplify IE10 compatibility.
+Notice that Babel `babel-polyfill` is still required in order to support other ES5 features.
+
+##### 7.3.2
+Edge-case bug fix for `CellMeasurer` in the event that its `getRowHeight` or `getColumnWidth` method gets called before the initial render completes.
+
+##### 7.3.1
+Increased the safe-scale size from 1,000,000 to 10,000,000 to make for better UX.
+
+##### 7.3.0
+`Grid` (and its HOCs `FlexTable` and `VirtualScroll`) now support larger heights and widths than browsers support natively.
+For example, the current version of Chrome will not allow users to scroll pass ~33.5M pixel offset.
+To work around this limitation, `Grid` increases the density of cells, shifting them as a ratio of what the full scrollable size would be to a browser-safe size.
+This should be more or less transparent to users, although in extreme cases it can lead to _really sensitive_ scroll responsiveness.
+
+##### 7.2.0
+Added new method- `measureAllCells`- to `Grid`, `FlexTable`, and `VirtualScroll` to force-measure all cells.
+This supports special use-cases where deferred measuring is not desired.
+
+Added `estimatedRowSize` property to `FlexTable` and `VirtualScroll` to be passed through to the inner `Grid`.
+
+Also added guard to ensure the `onScroll` callback for `Collection`, `Grid`, `FlexTable`, and `VirtualScroll` is never called with a negative number.
+
+##### 7.1.3
+The inner javascript-detect-element-resize library used by `AutoSizer` now passes the proper `useCapture` value when removing listeners as well. This should prevent lingering event listeners in certain cases. Thanks to @cyberxndr for this fix.
+
 ##### 7.1.2
 Added "_center_" option for `scrollToAlignment` property of `Collection`, `Grid`, `FlexTable`, and `VirtualScroll`.
 Thanks to @edulan for the contribution!

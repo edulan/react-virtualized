@@ -31,6 +31,12 @@ export default class FlexTable extends Component {
     /** Disable rendering the header at all */
     disableHeader: PropTypes.bool,
 
+    /**
+     * Used to estimate the total height of a FlexTable before all of its rows have actually been measured.
+     * The estimated total height is adjusted as rows are rendered.
+     */
+    estimatedRowSize: PropTypes.number.isRequired,
+
     /** Optional CSS class to apply to all column headers */
     headerClassName: PropTypes.string,
 
@@ -57,6 +63,18 @@ export default class FlexTable extends Component {
      * ({ index: number }): void
      */
     onRowClick: PropTypes.func,
+
+    /**
+     * Callback invoked when the mouse leaves a table row.
+     * ({ index: number }): void
+     */
+    onRowMouseOut: PropTypes.func,
+
+    /**
+     * Callback invoked when a user moves the mouse over a table row.
+     * ({ index: number }): void
+     */
+    onRowMouseOver: PropTypes.func,
 
     /**
      * Callback invoked with information about the slice of rows that were just rendered.
@@ -132,6 +150,7 @@ export default class FlexTable extends Component {
 
   static defaultProps = {
     disableHeader: false,
+    estimatedRowSize: 30,
     headerHeight: 0,
     headerStyle: {},
     noRowsRenderer: () => null,
@@ -153,6 +172,11 @@ export default class FlexTable extends Component {
     this._createRow = this._createRow.bind(this)
   }
 
+  /** See Grid#measureAllCells */
+  measureAllRows () {
+    this.refs.Grid.measureAllCells()
+  }
+
   /** See Grid#recomputeGridSize */
   recomputeRowHeights () {
     this.refs.Grid.recomputeGridSize()
@@ -170,6 +194,7 @@ export default class FlexTable extends Component {
     const {
       className,
       disableHeader,
+      estimatedRowSize,
       headerHeight,
       height,
       noRowsRenderer,
@@ -222,10 +247,14 @@ export default class FlexTable extends Component {
 
         <Grid
           aria-label={this.props['aria-label']}
-          ref='Grid'
           className={'FlexTable__Grid'}
+          cellRenderer={({ columnIndex, isScrolling, rowIndex }) => rowRenderer({
+            index: rowIndex,
+            isScrolling
+          })}
           columnWidth={width}
           columnCount={1}
+          estimatedRowSize={estimatedRowSize}
           height={availableRowsHeight}
           noContentRenderer={noRowsRenderer}
           onScroll={({ clientHeight, scrollHeight, scrollTop }) => onScroll({ clientHeight, scrollHeight, scrollTop })}
@@ -236,10 +265,7 @@ export default class FlexTable extends Component {
             stopIndex: rowStopIndex
           })}
           overscanRowCount={overscanRowCount}
-          cellRenderer={({ columnIndex, isScrolling, rowIndex }) => rowRenderer({
-            index: rowIndex,
-            isScrolling
-          })}
+          ref='Grid'
           rowHeight={rowHeight}
           rowCount={rowCount}
           scrollToAlignment={scrollToAlignment}
@@ -368,6 +394,8 @@ export default class FlexTable extends Component {
     const {
       children,
       onRowClick,
+      onRowMouseOver,
+      onRowMouseOut,
       rowClassName,
       rowGetter,
       rowStyle
@@ -389,11 +417,19 @@ export default class FlexTable extends Component {
 
     const a11yProps = {}
 
-    if (onRowClick) {
+    if (onRowClick || onRowMouseOver || onRowMouseOut) {
       a11yProps['aria-label'] = 'row'
       a11yProps.role = 'row'
       a11yProps.tabIndex = 0
-      a11yProps.onClick = () => onRowClick({ index })
+      if (onRowClick) {
+        a11yProps.onClick = () => onRowClick({index})
+      }
+      if (onRowMouseOut) {
+        a11yProps.onMouseOut = () => onRowMouseOut({index})
+      }
+      if (onRowMouseOver) {
+        a11yProps.onMouseOver = () => onRowMouseOver({index})
+      }
     }
 
     return (

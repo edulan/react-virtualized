@@ -10,6 +10,7 @@ This component expects explicit width, height, and padding parameters.
 | children | [FlexColumn](FlexColumn.md) | ✓ | One or more FlexColumns describing the data displayed in this table |
 | className | String |  | Optional custom CSS class name to attach to root `FlexTable` element. |
 | disableHeader | Boolean |  | Do not render the table header (only the rows) |
+| estimatedRowSize | Number |  | Used to estimate the total height of a `FlexTable` before all of its rows have actually been measured. The estimated total height is adjusted as rows are rendered. |
 | headerClassName | String |  | CSS class to apply to all column headers |
 | headerHeight | Number | ✓ | Fixed height of header row |
 | headerStyle | Object |  | Optional custom inline style to attach to table header columns. |
@@ -17,6 +18,8 @@ This component expects explicit width, height, and padding parameters.
 | noRowsRenderer |  | Function | Callback used to render placeholder content when :rowCount is 0 |
 | onHeaderClick |  | Function | Callback invoked when a user clicks on a table header. `(dataKey: string, columnData: any): void` |
 | onRowClick |  | Function | Callback invoked when a user clicks on a table row. `({ index: number }): void` |
+| onRowMouseOut |  | Function | Callback invoked when the mouse leaves a table row. `({ index: number }): void` |
+| onRowMouseOver |  | Function | Callback invoked when a user moves the mouse over a table row. `({ index: number }): void` |
 | onRowsRendered |  | Function | Callback invoked with information about the slice of rows that were just rendered: `({ overscanStartIndex: number, overscanStopIndex: number, startIndex: number, stopIndex: number }): void` |
 | overscanRowCount |  | Number | Number of rows to render above/below the visible bounds of the list. This can help reduce flickering during scrolling on certain browers/devices. |
 | onScroll | Function |  | Callback invoked whenever the scroll offset changes within the inner scrollable region: `({ clientHeight: number, scrollHeight: number: number, scrollTop: number }): void` |
@@ -35,6 +38,12 @@ This component expects explicit width, height, and padding parameters.
 | width | Number | ✓ | Width of the table |
 
 ### Public Methods
+
+##### measureAllRows
+Pre-measure all rows in a `FlexTable`.
+
+Typically rows are only measured as needed and estimated heights are used for cells that have not yet been measured.
+This method ensures that the next call to getTotalSize() returns an exact size (as opposed to just an estimated one).
 
 ##### recomputeRowHeights
 Recompute row heights and offsets.
